@@ -1,0 +1,4 @@
+zig-out/
+out/
+.zig-cache/
+kernel.bin
