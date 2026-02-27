@@ -40,5 +40,5 @@ clean:
 
 build: $(UF2)
 
-install: $(UF2)
-	mv $(UF2) /run/media/$(USER)/RIP-RP2
+flash: $(UF2)
+	cp $(UF2) /run/media/$(USER)/RPI-RP2
