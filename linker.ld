@@ -7,6 +7,10 @@ MEMORY
 
 SECTIONS
 {
+  .boot2 : {
+    KEEP(*(.boot2))
+  }
+
   .text : {
     KEEP(*(.text.entry))
     *(.text*)

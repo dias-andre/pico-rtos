@@ -20,6 +20,7 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
+    kernel.addObjectFile(b.path("out/start.o"));
     kernel.setLinkerScript(b.path("linker.ld"));
 
     b.installArtifact(kernel);
