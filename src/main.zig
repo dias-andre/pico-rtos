@@ -11,10 +11,13 @@ export fn _start() linksection(".text.entry") noreturn {
     gpio.init(25);
 
     gpio.set_output_mode(25);
+    gpio.write_low(25);
 
     while (true) {
-        gpio.toggle_pin(25);
-        timer.sleep(5000);
+        gpio.write_high(25);
+        timer.sleep(1000);
+        gpio.write_low(25);
+        timer.sleep(300);
     }
 }
 
