@@ -286,9 +286,14 @@ pub const UartHw = extern struct {
     pcellid3: u32, // 0xffc UARTPCellID3 Register
 };
 
+/// Mapped as defined in RP2040 Datasheet section 2.19.6.3
+const PadHw = packed struct { slew_fast: bool, schmitt: bool, pde: bool, pue: bool, drive: u2, ie: bool, od: bool, _reserved: u24 };
+const PadBankHw = extern struct { vol: u32, pads: [30]PadHw, _reserved: [2]u32 };
+
 pub const sio_hw = @as(*volatile SioHw, @ptrFromInt(SIO_BASE));
 pub const resets_hw = @as(*volatile ResetsHw, @ptrFromInt(RESETS_BASE));
 pub const io_bank0_hw = @as(*volatile IoBank0Hw, @ptrFromInt(IO_BANK0_BASE));
+pub const pads_bank0_hw = @as(*volatile PadBankHw, @ptrFromInt(0x4001c000));
 
 pub const uart0 = @as(*volatile UartHw, @ptrFromInt(UART0_BASE));
 pub const uart1 = @as(*volatile UartHw, @ptrFromInt(UART1_BASE));

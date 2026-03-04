@@ -4,20 +4,25 @@ const clocks = @import("hal/clocks.zig");
 const timer = @import("hal/timer.zig");
 
 export fn _start() linksection(".text.entry") noreturn {
-    gpio.enable_io_bank();
+    gpio.init();
     clocks.crystal_init();
     timer.enable_timer();
 
-    gpio.init(25);
+    gpio.init_pin(25);
+    gpio.init_pin(24);
 
     gpio.set_output_mode(25);
+    gpio.set_pullup(24);
     gpio.write_low(25);
 
+    gpio.write_high(25);
+    timer.sleep(500);
+    gpio.write_low(25);
     while (true) {
-        gpio.write_high(25);
-        timer.sleep(1000);
-        gpio.write_low(25);
-        timer.sleep(300);
+        if (gpio.read_pin(24) == false) {
+            gpio.toggle_pin(25);
+        }
+        timer.sleep(100);
     }
 }
 
