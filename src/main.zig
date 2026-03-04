@@ -6,6 +6,7 @@ const timer = @import("hal/timer.zig");
 export fn _start() linksection(".text.entry") noreturn {
     gpio.init();
     clocks.crystal_init();
+    clocks.enable_pll();
     timer.enable_timer();
 
     gpio.init_pin(25);

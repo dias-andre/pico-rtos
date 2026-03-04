@@ -31,6 +31,9 @@ const TIMER_BASE: u32 = 0x40054000;
 
 const WATCHDOG_BASE: usize = 0x40058000;
 
+const PLL_SYS_BASE: u32 = 0x40028000;
+const PLL_USB_BASE: u32 = 0x4002c000;
+
 /// Single-cycle IO (SIO) Register Map
 /// Mapped exactly as defined in RP2040 Datasheet section 2.3.1.7
 const SioHw = extern struct {
@@ -289,6 +292,10 @@ pub const UartHw = extern struct {
     pcellid3: u32, // 0xffc UARTPCellID3 Register
 };
 
+pub const PLL_Regs = extern struct { cs: u32, pwr: u32, fbdiv_int: u32, prim: u32 };
+
+pub const PLLMap = extern struct { cs: packed struct { refdiv: u6, _reserved0: u2, bypass: bool, _reserved1: u22, lock: bool }, pwr: packed struct { pd: bool, _reserved0: bool, dsmpd: bool, postdivpd: bool, _reserved1: bool, vcopd: bool, _reserved2: u26 }, fbdiv_int: packed struct { fbdiv: u12, _reserved: u20 }, prim: packed struct { _reserved0: u12, postdiv2: u3, _reserved1: bool, postdiv1: u3, _reserved2: u13 } };
+
 /// Mapped as defined in RP2040 Datasheet section 2.19.6.3
 const PadHw = packed struct { slew_fast: bool, schmitt: bool, pde: bool, pue: bool, drive: u2, ie: bool, od: bool, _reserved: u24 };
 const PadBankHw = extern struct { vol: u32, pads: [30]PadHw, _reserved: [2]u32 };
@@ -312,3 +319,6 @@ pub const resets_map = struct {
     pub const wdsel = @as(*volatile ResetRegisters, @ptrFromInt(RESETS_BASE + 0x4));
     pub const reset_done = @as(*const volatile ResetRegisters, @ptrFromInt(RESETS_BASE + 0x8));
 };
+
+pub const pll_sys_map = @as(*volatile PLLMap, @ptrFromInt(PLL_SYS_BASE));
+pub const pll_usb_map = @as(*volatile PLLMap, @ptrFromInt(PLL_USB_BASE));
