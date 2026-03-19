@@ -1,44 +1,42 @@
+# Default chip target if running just 'make'
+CHIP ?= rp2040
+
+# Configure the UF2 Magic Family ID based on the selected chip
+ifeq ($(CHIP),rp2350)
+    FAMILY_ID = 0xe48bff59
+else
+    FAMILY_ID = 0xe48bff56
+endif
+
 OUT_DIR = out
 ELF = zig-out/bin/kernel
-ASM = out/start.o
-BIN = $(OUT_DIR)/firmware.bin
-UF2 = $(OUT_DIR)/image.uf2
+BIN = $(OUT_DIR)/firmware_$(CHIP).bin
+UF2 = $(OUT_DIR)/image_$(CHIP).uf2
 
-XCPU = -mcpu=cortex-m0
-AOPS = --warn --fatal-warnings $(XCPU)
-COPS = --Wall -O2 -ffrestanding $(XCPU)
-LOPS = -nostdlib -nostartfiles
+all: build
 
-ARMGNU = arm-none-eabi-as
-
-makeuf2f: makeuf2f.c
-	gcc -O2 makeuf2f.c -o makeuf2f
-
-$(ASM): src/boot/start.s
-	@echo "=> [1/4] Compiling Assembly Code..."
-	@mkdir -p $(OUT_DIR)
-	$(ARMGNU) $(AOPS) src/boot/start.s -o $(OUT_DIR)/start.o
-
-$(ELF): $(ASM) src/main.zig linker.ld build.zig
-	@echo "=> [2/4] Compiling Zig Code..."
-	zig build
-
-$(BIN): $(ELF)
-	@echo "=> [3/4] Extracting raw binary to $(OUT_DIR)/..."
+build:
+	@echo "=> [1/3] Compiling Zig kernel for $(CHIP)..."
+	zig build -Dchip=$(CHIP)
+	
+	@echo "=> [2/3] Extracting raw binary to $(BIN)..."
 	@mkdir -p $(OUT_DIR)
 	zig objcopy -O binary $(ELF) $(BIN)
+	
+	@echo "=> [3/3] Packaging to UF2 format (Family ID: $(FAMILY_ID))..."
+	python3 tools/uf2conv.py -b 0x10000000 -f $(FAMILY_ID) -o $(UF2) $(BIN)
+	@echo "=> Success! UF2 image is ready at: $(UF2)"
 
-$(UF2): $(BIN) makeuf2f
-	@echo "=> [4/4] Packaging to UF2..."
-	# python3 tools/uf2conv.py -b 0x20000000 -f 0xe48bff56 -o $(UF2) $(BIN)
-	./makeuf2f $(BIN) $(UF2)
-	@echo "=> Success! Your image is ready at: $(UF2)"
+rp2040:
+	$(MAKE) CHIP=rp2040 build
+
+rp2350:
+	$(MAKE) CHIP=rp2350 build
 
 clean:
-	@echo "=> Cleaning build files..."
+	@echo "=> Cleaning build artifacts..."
 	rm -rf zig-out .zig-cache $(OUT_DIR)
 
-build: $(UF2)
-
-flash: $(UF2)
+flash:
+	@echo "=> Flashing $(UF2) to device..."
 	cp $(UF2) /run/media/$(USER)/RPI-RP2
