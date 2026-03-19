@@ -28,7 +28,7 @@ const timer = @import("hal/timer.zig");
 export fn _start() callconv(.c) noreturn {
     gpio.init();
     gpio.init_pin(25);
-    gpio.set_input_mode(25);
+    gpio.set_output_mode(25);
     gpio.write_high(25);
     while(true){}
 }
