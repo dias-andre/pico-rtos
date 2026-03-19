@@ -1,38 +1,92 @@
-const RESETS_BASE: u32 = 0x4000c000;
+const build_options = @import("build_options");
 
-const RESET: *volatile u32 = @ptrFromInt(RESETS_BASE + 0x0);
-const WDSEL: *volatile u32 = @ptrFromInt(RESETS_BASE + 0x4);
-const RESET_DONE: *volatile u32 = @ptrFromInt(RESETS_BASE + 0x8);
+const RESETS_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x4000c000,
+    .rp2350 => 0x40010000
+};
 
-const IO_BANK0_BASE: u32 = 0x40014000;
-const IO_QSPI_BANK0_BASE: u32 = 0x40018000;
+const IO_BANK0_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40014000,
+    .rp2350 => 0x40028000
+};
 
-const UART0_BASE: u32 = 0x40034000;
-const UART1_BASE: u32 = 0x40038000;
+const IO_QSPI_BANK0_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40018000,
+    .rp2350 => 0x40030000
+};
 
-const SPI0_BASE: u32 = 0x4003c000;
-const SPI1_BASE: u32 = 0x40040000;
+const UART0_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40034000,
+    .rp2350 => 0x40070000
+};
 
-const I2C0_BASE: u32 = 0x40044000;
-const I2C1_BASE: u32 = 0x40048000;
+const UART1_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40038000,
+    .rp2350 => 0x40078000
+};
 
-const PWM_BASE: u32 = 0x40050000;
+const SPI0_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x4003c000,
+    .rp2350 => 0x40088000
+};
+
+const SPI1_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40040000,
+    .rp2350 => 0x40088000
+};
+
+const I2C0_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40044000,
+    .rp2350 => 0x40090000
+};
+
+const I2C1_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40048000,
+    .rp2350 => 0x40098000
+};
+
+const PWM_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40098000,
+    .rp2350 => 0x400a8000
+};
 
 const PIO0_BASE: u32 = 0x50200000;
 const PIO1_BASE: u32 = 0x50300000;
+const PIO02_BASE: u32 = 0x50400000;
 
 const SIO_BASE: u32 = 0xd0000000;
 
-const CLOCKS_BASE: u32 = 0x40008000;
+const CLOCKS_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40008000,
+    .rp2350 => 0x40010000,
+};
 
-const XOSC_BASE: u32 = 0x40024000;
+const XOSC_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40024000,
+    .rp2350 => 0x40048000
+};
 
-const TIMER_BASE: u32 = 0x40054000;
+const TIMER_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40054000,
+    .rp2350 => 0x400b0000
+};
 
-const WATCHDOG_BASE: usize = 0x40058000;
+const TIMER1_BASE: u32 = 0x400b8000; // Only available on RP2350.
 
-const PLL_SYS_BASE: u32 = 0x40028000;
-const PLL_USB_BASE: u32 = 0x4002c000;
+const WATCHDOG_BASE: usize = switch (build_options.chip) {
+    .rp2040 => 0x40058000,
+    .rp2350 => 0x400d8000,
+};
+
+const PLL_SYS_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x40028000,
+    .rp2350 => 0x40050000
+};
+
+const PLL_USB_BASE: u32 = switch (build_options.chip) {
+    .rp2040 => 0x4002c000,
+    .rp2350 => 0x40058000
+};
 
 /// Single-cycle IO (SIO) Register Map
 /// Mapped exactly as defined in RP2040 Datasheet section 2.3.1.7
