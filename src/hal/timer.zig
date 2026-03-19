@@ -1,11 +1,16 @@
 const regs = @import("registers.zig");
+const build_options = @import("build_options");
 
 pub fn enable_timer() void {
     // const mask = @as(u32, 1 << 21);
     // regs.resets_hw.reset &= ~mask;
-    regs.resets_map.reset.timer = false;
-    // while ((regs.resets_hw.reset_done & mask) == 0) {}
-    while (!regs.resets_map.reset_done.timer) {}
+    if (build_options.chip == .rp2350) {
+        regs.resets_map.reset.timer0 = false;
+        while (regs.resets_map.reset_done.timer0 == false) {}
+    } else {
+        regs.resets_map.reset.timer = false;
+        while (regs.resets_map.reset_done.timer == false) {}
+    }
     regs.watchdog.tick = (1 << 9) | 12;
 }
 
