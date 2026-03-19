@@ -29,6 +29,9 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+    
+    kernel.lto = std.zig.LtoMode.none;
+    kernel.root_module.strip = false;
 
     if (target_chip == .rp2040) {
         // kernel.addObjectFile(b.path("out/start.o"));
