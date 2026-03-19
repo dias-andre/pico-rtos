@@ -25,11 +25,15 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+    
+    if (target_chip == .rp2040) {
+        kernel.addObjectFile(b.path("out/start.o"));
+        kernel.setLinkerScript(b.path("linker_rp2040.ld"));
+    } else {
+        kernel.setLinkerScript(b.path("linker_rp2350.ld"));
+    }
 
     kernel.root_module.addOptions("build_options", options);
-
-    kernel.addObjectFile(b.path("out/start.o"));
-    kernel.setLinkerScript(b.path("linker.ld"));
 
     b.installArtifact(kernel);
 }
