@@ -1,6 +1,12 @@
 const std = @import("std");
 
+pub const Chip = enum { rp2040, rp2350 };
+
 pub fn build(b: *std.Build) void {
+    const target_chip = b.option(Chip, "chip", "Select the target microcontroller") orelse .rp2040;
+    const options = b.addOptions();
+    options.addOption(Chip, "chip", target_chip);
+
     const target_query = std.Target.Query{
         .cpu_arch = .thumb,
         .cpu_model = .{ .explicit = &std.Target.arm.cpu.cortex_m0plus },
@@ -19,6 +25,8 @@ pub fn build(b: *std.Build) void {
             .optimize = optimize,
         }),
     });
+
+    kernel.root_module.addOptions("build_options", options);
 
     kernel.addObjectFile(b.path("out/start.o"));
     kernel.setLinkerScript(b.path("linker.ld"));
