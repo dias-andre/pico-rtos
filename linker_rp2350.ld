@@ -8,13 +8,20 @@ MEMORY
 
 SECTIONS
 {
-  .text : {
-    KEEP(*(.text.entry)) 
+  . = 0x10000000;
+
+  .boot_block : {
+    __boot_block_start = .;
     KEEP(*(.embedded_block))
-      *(.text*)
-      *(.rodata*)
-      *(.ARM.extab* .gnu.linkonce.armextab.*)
-      . = ALIGN(4);
+  } > FLASH
+
+  .text 0x10000100 : {
+    __logical_binary_start = .;
+    KEEP(*(.text.entry)) 
+    *(.text*)
+    *(.rodata*)
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+    . = ALIGN(4);
   } > FLASH
 
   .ARM.exidx : {
