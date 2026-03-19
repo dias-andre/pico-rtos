@@ -1,4 +1,4 @@
-extern fn _start() noreturn;
+extern fn _start() callconv(.c) noreturn;
 
 const STACK_TOP: u32 = 0x20082000;
 

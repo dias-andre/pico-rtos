@@ -25,21 +25,12 @@ const gpio = @import("hal/gpio.zig");
 const clocks = @import("hal/clocks.zig");
 const timer = @import("hal/timer.zig");
 
-export fn _start() noreturn {
+export fn _start() callconv(.c) noreturn {
     gpio.init();
-    clocks.crystal_init();
-    // clocks.enable_pll();
-    timer.enable_timer();
-
     gpio.init_pin(25);
-
-    gpio.set_output_mode(25);
-    gpio.write_low(25);
-
-    while (true) {
-        gpio.toggle_pin(25);
-        timer.sleep(100);
-    }
+    gpio.set_input_mode(25);
+    gpio.write_high(25);
+    while(true){}
 }
 
 pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
