@@ -2,12 +2,10 @@ const build_options = @import("build_options");
 const vectors = @import("vectors.zig");
 
 pub const ImageDefBlock = extern struct {
-    magic_start: u32 = 0xFFFFEADB,
-    image_type: u32 = 0x00000102,
-    image_info: u32 = 0x00000001,
-    vt_type: u32 = 0x00000103,
-    vt_offset: u32 = 0x00000100,
-    end_tag: u32 = 0x00000000,
+    magic_start: u32 = 0xFFFFDED3,
+    image_type_item: u32 = 0x10210142,
+    last_item: u32 = 0x000001FF,
+    link_offset: u32 = 0x00000000,
     magic_end: u32 = 0xAB123579,
 };
 
@@ -25,12 +23,14 @@ const gpio = @import("hal/gpio.zig");
 const clocks = @import("hal/clocks.zig");
 const timer = @import("hal/timer.zig");
 
-export fn _start() callconv(.c) noreturn {
+export fn _start() linksection(".text.entry") callconv(.c) noreturn {
     gpio.init();
     gpio.init_pin(25);
     gpio.set_output_mode(25);
     gpio.write_high(25);
-    while(true){}
+    while (true) {
+        asm volatile ("nop");
+    }
 }
 
 pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace, ret_addr: ?usize) noreturn {
