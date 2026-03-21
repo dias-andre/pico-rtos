@@ -4,7 +4,7 @@
 
 .section .vectors, "a", %progbits
 .global vector_table
-.type vector_Table, %object
+.type vector_table, %object
 
 .type _start, %function
 .type unhandled, %function
