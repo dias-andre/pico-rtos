@@ -9,14 +9,12 @@ MEMORY
 SECTIONS
 {
   . = 0x10000000;
-  
-  .boot_block : {
-    KEEP(*(.embedded_block))
-    . = ALIGN(32);
-  } > FLASH
-
   .vectors : {
     KEEP(*(.vectors))
+  } > FLASH
+
+  .boot_block : ALIGN(4) {
+    KEEP(*(.embedded_block))
   } > FLASH
 
   .text : {
