@@ -343,7 +343,30 @@ pub const PLL_Regs = extern struct { cs: u32, pwr: u32, fbdiv_int: u32, prim: u3
 pub const PLLMap = extern struct { cs: packed struct { refdiv: u6, _reserved0: u2, bypass: bool, _reserved1: u22, lock: bool }, pwr: packed struct { pd: bool, _reserved0: bool, dsmpd: bool, postdivpd: bool, _reserved1: bool, vcopd: bool, _reserved2: u26 }, fbdiv_int: packed struct { fbdiv: u12, _reserved: u20 }, prim: packed struct { _reserved0: u12, postdiv2: u3, _reserved1: bool, postdiv1: u3, _reserved2: u13 } };
 
 /// Mapped as defined in RP2040 Datasheet section 2.19.6.3
-const PadHw = packed struct { slew_fast: bool, schmitt: bool, pde: bool, pue: bool, drive: u2, ie: bool, od: bool, iso: bool, _reserved: u23 };
+const PadHw = switch (build_options.chip) {
+    .rp2040 => packed struct {
+        slew_fast: bool, // bit 0
+        schmitt: bool, // bit 1
+        pde: bool, // bit 2
+        pue: bool, // bit 3
+        drive: u2, // bits 4-5
+        ie: bool, // bit 6
+        od: bool, // bit 7
+        _reserved: u24,
+    },
+    .rp2350 => packed struct {
+        slew_fast: bool, // bit 0
+        schmitt: bool, // bit 1
+        pde: bool, // bit 2
+        pue: bool, // bit 3
+        drive: u2, // bits 4-5
+        ie: bool, // bit 6
+        od: bool, // bit 7
+        iso: bool, // bit 8
+        _reserved: u23,
+    },
+};
+
 const PadBankHw = extern struct { vol: u32, pads: [GPIO_COUNT]PadHw, _reserved: [2]u32 };
 
 pub const sio_hw = @as(*volatile SioHw, @ptrFromInt(SIO_BASE));
