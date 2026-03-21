@@ -3,3 +3,4 @@ out/
 .zig-cache/
 kernel.bin
 makeuf2f
+.vscode
