@@ -1,4 +1,5 @@
 const regs = @import("registers.zig");
+const build_options = @import("build_options");
 
 pub fn init() void {
     // const gpio_bits = @as(u32, (1 << 5) | (1 << 8)); // enables pad_bank0
@@ -6,25 +7,28 @@ pub fn init() void {
     // while ((regs.resets_hw.reset_done & gpio_bits) != gpio_bits) {}
     regs.resets_map.reset.io_bank0 = false;
     regs.resets_map.reset.pads_bank0 = false;
-    while (!regs.resets_map.reset_done.io_bank0 and !regs.resets_map.reset_done.pads_bank0) {}
+    while (!regs.resets_map.reset_done.io_bank0 or !regs.resets_map.reset_done.pads_bank0) {}
 }
 
 pub fn init_pin(pin: u5) void {
     regs.io_bank0_hw.io[pin].ctrl = 5; // set SIO function
+    if (build_options.chip == .rp2350) {
+        regs.pads_bank0_hw.pads[pin].iso = false;
+    }
 }
 
 pub fn set_output_mode(pin: u5) void {
     const mask = @as(u32, 1) << pin;
     // regs.sio_hw.gpio_oe |= mask;
     regs.sio_hw.gpio_oe_set = mask;
+    regs.pads_bank0_hw.pads[pin].od = false;
+    regs.pads_bank0_hw.pads[pin].ie = false;
 }
 
 pub fn set_input_mode(pin: u5) void {
     const mask = @as(u32, 1) << pin;
-    // regs.sio_hw.gpio_oe &= ~mask;
     regs.sio_hw.gpio_oe_clr = mask;
     regs.pads_bank0_hw.pads[pin].ie = true;
-    // regs.pads_bank0_hw.pads[pin].schmitt = true;
     regs.pads_bank0_hw.pads[pin].od = true;
 }
 
