@@ -5,7 +5,7 @@ const resets = @import("peripherals/resets.zig");
 const gpio = @import("peripherals/gpio.zig");
 const uart = @import("peripherals/uart.zig");
 const clocks_p = @import("peripherals/clocks.zig");
-const timer = @import("peripherals/timer.zig");
+const timer_p = @import("peripherals/timer.zig");
 const watchdog_p = @import("peripherals/watchdog.zig");
 const pll_p = @import("peripherals/pll.zig");
 
@@ -24,8 +24,8 @@ pub const uart1 = @as(*volatile uart.UartHw, @ptrFromInt(map.UART1_BASE));
 
 pub const clocks: *volatile clocks_p.ClocksHw = @ptrFromInt(map.CLOCKS_BASE);
 pub const xosc_hw: *volatile clocks_p.XoscHw = @ptrFromInt(map.XOSC_BASE);
-pub const timer_hw: *volatile timer.TimerHw = @ptrFromInt(map.TIMER_BASE);
-pub const watchdog: *volatile watchdog.WatchdogHw = @ptrFromInt(map.WATCHDOG_BASE);
+pub const timer_hw: *volatile timer_p.TimerHw = @ptrFromInt(map.TIMER_BASE);
+pub const watchdog: *volatile watchdog_p.WatchdogHw = @ptrFromInt(map.WATCHDOG_BASE);
 
 pub const resets_map = struct {
     pub const reset = @as(*volatile resets.ResetRegisters, @ptrFromInt(map.RESETS_BASE));
