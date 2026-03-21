@@ -2,7 +2,8 @@
 .cpu cortex-m33
 .thumb
 
-.section .vectors, "a", %progbits
+.section .vectors, "a"
+.align 8
 .global vector_table
 .type vector_table, %object
 
