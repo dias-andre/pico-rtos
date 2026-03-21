@@ -10,11 +10,13 @@
 //
 // PLL SYS: 12 / 1 = 12MHz * 125 = 1500MHz / 6 / 2 = 125MHz
 // PLL USB: 12 / 1 = 12MHz * 100 = 1200MHz / 5 / 5 = 48MHz
-pub const regs = @import("registers.zig");
+const pll_p = @import("peripherals/pll.zig");
+const regs = @import("registers.zig");
+const build_options = @import("build_options");
 
 const XOSC_FREQ: u32 = 12;
 
-fn pll_init(pll: *volatile regs.PLLMap, refdiv: u6, vco_freq: u32, postdiv1: u3, postdiv2: u3) void {
+fn pll_init(pll: *volatile pll_p.PLLMap, refdiv: u6, vco_freq: u32, postdiv1: u3, postdiv2: u3) void {
     const ref_freq = XOSC_FREQ / refdiv;
     const fbdiv = @as(u12, @intCast(vco_freq / ref_freq));
 
@@ -41,6 +43,14 @@ pub fn init() void {
     regs.resets_map.reset.pll_sys = false;
     regs.resets_map.reset.pll_usb = false;
     while (!regs.resets_map.reset_done.pll_sys or !regs.resets_map.reset_done.pll_usb) {}
-    pll_init(regs.pll_sys_map, 1, 1500, 6, 2);
+    // pll_init(regs.pll_sys_map, 1, 1500, 6, 2);
+    switch (build_options.chip) {
+        .rp2040 => {
+            pll_init(regs.pll_sys_map, 1, 1500, 6, 2);
+        },
+        .rp2350 => {
+            pll_init(regs.pll_sys_map, 1, 1500, 5, 2);
+        }
+    }
     pll_init(regs.pll_usb_map, 1, 1200, 5, 5);
 }
